@@ -179,12 +179,12 @@ const MonthlyReportTab = () => {
       const key = sale.customer_name || 'Walk-in Customer';
       const existing = customerMap.get(key);
       
-      const productNames = (sale.items || []).map((item: SaleItem) => item.product_name);
+      const productNames = (sale.items || []).map((item: SaleItem) => item.product_name).filter(Boolean);
       
       if (existing) {
         existing.orders += 1;
         existing.totalSpent += sale.total_amount || 0;
-        existing.products = [...new Set([...existing.products, ...productNames])];
+        existing.products = [...new Set([...(existing.products || []), ...productNames])];
       } else {
         customerMap.set(key, {
           name: key,
@@ -192,7 +192,7 @@ const MonthlyReportTab = () => {
           type: sale.customer_type || 'Individual',
           orders: 1,
           totalSpent: sale.total_amount || 0,
-          products: productNames
+          products: productNames || []
         });
       }
     });
@@ -416,14 +416,14 @@ const MonthlyReportTab = () => {
                           <TableCell className="text-right font-medium">{formatCurrency(customer.totalSpent)}</TableCell>
                           <TableCell className="max-w-[200px]">
                             <div className="flex flex-wrap gap-1">
-                              {customer.products.slice(0, 3).map((product, i) => (
+                              {(customer.products || []).slice(0, 3).map((product, i) => (
                                 <Badge key={i} variant="outline" className="text-xs">
-                                  {product.length > 15 ? product.substring(0, 15) + '...' : product}
+                                  {product && product.length > 15 ? product.substring(0, 15) + '...' : product}
                                 </Badge>
                               ))}
-                              {customer.products.length > 3 && (
+                              {(customer.products || []).length > 3 && (
                                 <Badge variant="outline" className="text-xs">
-                                  +{customer.products.length - 3} more
+                                  +{(customer.products || []).length - 3} more
                                 </Badge>
                               )}
                             </div>
