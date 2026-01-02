@@ -12,7 +12,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { productsApi, customersApi } from "@/services/api";
 import { reportsApi } from "@/services/reportsApi";
-import { profitApi } from "@/services/profitApi";
 import ProductDetailsModal from "@/components/reports/ProductDetailsModal";
 import CustomerDetailsModal from "@/components/reports/CustomerDetailsModal";
 import {
@@ -25,14 +24,11 @@ import {
   RefreshCw,
   FileText,
   BarChart3,
-  ArrowUpRight,
-  ArrowDownRight,
-  ShoppingCart,
-  DollarSign,
   AlertTriangle,
   CheckCircle2,
   ExternalLink
 } from "lucide-react";
+import MonthlyReportTab from "@/components/reports/MonthlyReportTab";
 
 // Types
 interface Product {
@@ -56,21 +52,10 @@ interface Customer {
   totalOrders?: number;
 }
 
-interface MonthlyReportItem {
-  year: string;
-  month: string;
-  period: string;
-  revenue: string;
-  profit: string;
-  sales_count: string;
-  profit_margin: string;
-}
-
 const BusinessReports = () => {
   const { toast } = useToast();
   const [searchProducts, setSearchProducts] = useState("");
   const [searchCustomers, setSearchCustomers] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState<string>("all");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   
   // Modal states
@@ -97,12 +82,6 @@ const BusinessReports = () => {
     },
   });
 
-  // Fetch monthly report
-  const { data: monthlyReportData, isLoading: monthlyLoading, refetch: refetchMonthly } = useQuery({
-    queryKey: ['reports-monthly'],
-    queryFn: profitApi.getMonthlyReport,
-  });
-
   // Fetch inventory report for fast/slow moving items
   const { data: inventoryReportData, isLoading: inventoryLoading, refetch: refetchInventory } = useQuery({
     queryKey: ['reports-inventory'],
@@ -127,12 +106,6 @@ const BusinessReports = () => {
       customer.email?.toLowerCase().includes(searchCustomers.toLowerCase());
   });
 
-  // Get monthly report data filtered by month
-  const filteredMonthlyReport = (monthlyReportData || []).filter((item: MonthlyReportItem) => {
-    if (selectedMonth === "all") return true;
-    return item.period === selectedMonth;
-  });
-
   // Get fast and slow moving products from inventory report
   const fastMovingProducts = inventoryReportData?.data?.inventoryReport?.fastMovingItems || [];
   const slowMovingProducts = inventoryReportData?.data?.inventoryReport?.slowMovingItems || [];
@@ -141,7 +114,6 @@ const BusinessReports = () => {
   const handleRefreshAll = () => {
     refetchProducts();
     refetchCustomers();
-    refetchMonthly();
     refetchInventory();
     toast({
       title: "Refreshed",
@@ -381,131 +353,7 @@ const BusinessReports = () => {
 
         {/* Monthly Report Tab */}
         <TabsContent value="monthly" className="space-y-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex flex-col sm:flex-row justify-between gap-4">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Calendar className="h-5 w-5" />
-                  Monthly Sales Report
-                </CardTitle>
-                <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Filter by month" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Months</SelectItem>
-                    {(monthlyReportData || []).map((item: MonthlyReportItem) => (
-                      <SelectItem key={item.period} value={item.period}>{item.period}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {monthlyLoading ? (
-                <div className="space-y-2">
-                  {[...Array(5)].map((_, i) => (
-                    <Skeleton key={i} className="h-12 w-full" />
-                  ))}
-                </div>
-              ) : (
-                <>
-                  {/* Summary Cards */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                    <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900">
-                      <CardContent className="pt-4">
-                        <div className="flex items-center gap-2">
-                          <DollarSign className="h-5 w-5 text-blue-600" />
-                          <span className="text-sm font-medium text-muted-foreground">Total Revenue</span>
-                        </div>
-                        <p className="text-2xl font-bold mt-2">
-                          {formatCurrency(filteredMonthlyReport.reduce((sum: number, item: MonthlyReportItem) => sum + parseFloat(item.revenue || "0"), 0))}
-                        </p>
-                      </CardContent>
-                    </Card>
-                    <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900">
-                      <CardContent className="pt-4">
-                        <div className="flex items-center gap-2">
-                          <TrendingUp className="h-5 w-5 text-green-600" />
-                          <span className="text-sm font-medium text-muted-foreground">Total Profit</span>
-                        </div>
-                        <p className="text-2xl font-bold mt-2">
-                          {formatCurrency(filteredMonthlyReport.reduce((sum: number, item: MonthlyReportItem) => sum + parseFloat(item.profit || "0"), 0))}
-                        </p>
-                      </CardContent>
-                    </Card>
-                    <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900">
-                      <CardContent className="pt-4">
-                        <div className="flex items-center gap-2">
-                          <ShoppingCart className="h-5 w-5 text-purple-600" />
-                          <span className="text-sm font-medium text-muted-foreground">Total Sales</span>
-                        </div>
-                        <p className="text-2xl font-bold mt-2">
-                          {filteredMonthlyReport.reduce((sum: number, item: MonthlyReportItem) => sum + parseInt(item.sales_count || "0"), 0)}
-                        </p>
-                      </CardContent>
-                    </Card>
-                    <Card className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950 dark:to-orange-900">
-                      <CardContent className="pt-4">
-                        <div className="flex items-center gap-2">
-                          <BarChart3 className="h-5 w-5 text-orange-600" />
-                          <span className="text-sm font-medium text-muted-foreground">Avg Margin</span>
-                        </div>
-                        <p className="text-2xl font-bold mt-2">
-                          {filteredMonthlyReport.length > 0 
-                            ? (filteredMonthlyReport.reduce((sum: number, item: MonthlyReportItem) => sum + parseFloat(item.profit_margin || "0"), 0) / filteredMonthlyReport.length).toFixed(1)
-                            : 0}%
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </div>
-
-                  <ScrollArea className="h-[400px]">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Period</TableHead>
-                          <TableHead className="text-right">Revenue</TableHead>
-                          <TableHead className="text-right">Profit</TableHead>
-                          <TableHead className="text-right">Sales Count</TableHead>
-                          <TableHead className="text-right">Profit Margin</TableHead>
-                          <TableHead>Performance</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredMonthlyReport.map((item: MonthlyReportItem, index: number) => {
-                          const margin = parseFloat(item.profit_margin || "0");
-                          const isGood = margin >= 20;
-                          return (
-                            <TableRow key={item.period || index}>
-                              <TableCell className="font-medium">{item.period}</TableCell>
-                              <TableCell className="text-right">{formatCurrency(item.revenue)}</TableCell>
-                              <TableCell className="text-right">{formatCurrency(item.profit)}</TableCell>
-                              <TableCell className="text-right">{item.sales_count}</TableCell>
-                              <TableCell className="text-right">{parseFloat(item.profit_margin || "0").toFixed(1)}%</TableCell>
-                              <TableCell>
-                                {isGood ? (
-                                  <span className="flex items-center gap-1 text-green-600">
-                                    <ArrowUpRight className="h-4 w-4" />
-                                    Good
-                                  </span>
-                                ) : (
-                                  <span className="flex items-center gap-1 text-orange-600">
-                                    <ArrowDownRight className="h-4 w-4" />
-                                    Needs Improvement
-                                  </span>
-                                )}
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  </ScrollArea>
-                </>
-              )}
-            </CardContent>
-          </Card>
+          <MonthlyReportTab />
         </TabsContent>
 
         {/* Inventory Analysis Tab */}
