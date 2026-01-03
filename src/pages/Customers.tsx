@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Users, Search, Plus, Edit, CreditCard, Phone, MapPin, Calendar, Mail, Building, IdCard, Receipt, History, AlertCircle, Banknote, Download, Trash2, Archive } from "lucide-react";
+import { Users, Search, Plus, Edit, CreditCard, Phone, MapPin, Calendar, Mail, Building, IdCard, Receipt, History, AlertCircle, Banknote, Download, Trash2, Archive, GitMerge } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { customersApi } from "@/services/api";
 import { CustomerEditModal } from "@/components/customers/CustomerEditModal";
@@ -19,6 +19,7 @@ import { CustomersList } from "@/components/customers/CustomersList";
 import { CustomersPagination } from "@/components/customers/CustomersPagination";
 import { generateAllCustomersPDF } from "@/utils/allCustomersPdfGenerator";
 import CustomerDetailsModal from "@/components/reports/CustomerDetailsModal";
+import DuplicatesTab from "@/components/customers/DuplicatesTab";
 
 const Customers = () => {
   const { toast } = useToast();
@@ -480,16 +481,20 @@ const Customers = () => {
         </Card>
       </div>
 
-      {/* Tabs for Active and Inactive Customers */}
+      {/* Tabs for Active, Inactive, and Duplicates */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
+        <TabsList className="grid w-full max-w-lg grid-cols-3">
           <TabsTrigger value="active">
             <Users className="h-4 w-4 mr-2" />
-            Active Customers
+            Active
           </TabsTrigger>
           <TabsTrigger value="inactive">
             <Archive className="h-4 w-4 mr-2" />
-            Old Customers
+            Old
+          </TabsTrigger>
+          <TabsTrigger value="duplicates">
+            <GitMerge className="h-4 w-4 mr-2" />
+            Duplicates
           </TabsTrigger>
         </TabsList>
 
@@ -673,6 +678,11 @@ const Customers = () => {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Duplicates Tab */}
+        <TabsContent value="duplicates" className="space-y-3 mt-3">
+          <DuplicatesTab />
         </TabsContent>
       </Tabs>
 
