@@ -32,7 +32,7 @@ import Profit from "./pages/Profit";
 import Credits from "./pages/Credits";
 import InventoryLogs from "./pages/InventoryLogs";
 import AuditLogs from "./pages/AuditLogs";
-import BusinessReports from "./pages/BusinessReports";
+
 
 const queryClient = new QueryClient();
 
@@ -73,7 +73,7 @@ const App = () => (
                     <Route path="/finances" element={<Finances />} />
                     <Route path="/audit-logs" element={<AuditLogs />} />
                     <Route path="/reports" element={<Reports />} />
-                    <Route path="/business-reports" element={<BusinessReports />} />
+                    
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </main>

@@ -433,4 +433,19 @@ export const customerApi = {
   // Get dashboard stats
   getDashboardStats: () =>
     apiRequest<ApiResponse<DashboardStats>>('/dashboard/enhanced-stats'),
+
+  // Get customers with duplicate phone numbers
+  getDuplicatesByPhone: () =>
+    apiRequest<ApiResponse<Customer[]>>('/customers/duplicates/phone'),
+
+  // Get customers with duplicate names
+  getDuplicatesByName: () =>
+    apiRequest<ApiResponse<Customer[]>>('/customers/duplicates/name'),
+
+  // Merge customers
+  mergeCustomers: (keptId: number, mergedIds: number[]) =>
+    apiRequest<ApiResponse<Customer>>('/customers/merge', {
+      method: 'POST',
+      body: JSON.stringify({ kept_id: keptId, merged_ids: mergedIds }),
+    }),
 };
