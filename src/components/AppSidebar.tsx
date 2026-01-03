@@ -24,7 +24,6 @@ import {
   TrendingUp,
   Calculator,
   Truck,
-  Bell,
   BarChart3,
   Calendar,
   CreditCard,
@@ -129,11 +128,6 @@ const financeItems: MenuItem[] = [
 
 // Analytics & Reports
 const analyticsItems: MenuItem[] = [
-  {
-    title: "Reports",
-    url: "/business-reports",
-    icon: FileText,
-  },
   {
     title: "Profit Analytics",
     url: "/profit",
@@ -265,21 +259,23 @@ export function AppSidebar() {
       </SidebarContent>
       
       <SidebarFooter className="border-t border-sidebar-border p-2">
-        <div className="flex items-center justify-center w-full">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleSettingsClick}
-            className={`h-10 w-10 rounded-lg flex items-center justify-center transition-colors ${
-              state === 'collapsed' 
-                ? 'bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90' 
-                : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-            }`}
-          >
-            <Settings className="h-4 w-4" />
-            <span className="group-data-[collapsible=icon]:hidden ml-2 text-sm font-medium">Settings</span>
-          </Button>
-        </div>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton 
+              asChild
+              isActive={location.pathname === '/settings'}
+              className="w-full hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground"
+            >
+              <button
+                onClick={handleSettingsClick}
+                className="flex items-center gap-2 w-full text-left text-sidebar-foreground"
+              >
+                <Settings className="h-4 w-4" />
+                <span className="flex-1">Settings</span>
+              </button>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
   )

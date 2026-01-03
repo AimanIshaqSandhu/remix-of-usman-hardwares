@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Phone, MapPin, Mail, Calendar, Edit, Download, Building, Users } from "lucide-react";
+import { Phone, MapPin, Mail, Calendar, Edit, Download, Building, Users, Eye } from "lucide-react";
 import { generateCustomerPurchasePDF } from "@/utils/customerPdfGenerator";
 import { useToast } from "@/hooks/use-toast";
 import { apiConfig } from "@/utils/apiConfig";
@@ -27,9 +27,10 @@ interface CustomersListProps {
   loading: boolean;
   onSelectCustomer: (customer: Customer) => void;
   onEditCustomer: (customer: Customer) => void;
+  onViewDetails: (customer: Customer) => void;
 }
 
-export const CustomersList = ({ customers, loading, onSelectCustomer, onEditCustomer }: CustomersListProps) => {
+export const CustomersList = ({ customers, loading, onSelectCustomer, onEditCustomer, onViewDetails }: CustomersListProps) => {
   const { toast } = useToast();
   const [exportingCustomer, setExportingCustomer] = useState<string | null>(null);
 
@@ -228,9 +229,18 @@ export const CustomersList = ({ customers, loading, onSelectCustomer, onEditCust
                 <Button
                   variant="outline"
                   size="sm"
+                  className="bg-purple-50 hover:bg-purple-100 text-purple-600 border-purple-200"
+                  onClick={() => onViewDetails(customer)}
+                >
+                  <Eye className="h-4 w-4 mr-1" />
+                  Details
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => onSelectCustomer(customer)}
                 >
-                  View Details
+                  View Summary
                 </Button>
               </div>
             </div>

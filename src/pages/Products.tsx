@@ -19,7 +19,7 @@ import {
 import { Package, Search, Plus, Edit, Trash2, AlertTriangle, RefreshCw, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { productsApi, categoriesApi } from "@/services/api";
-import { ProductDetailsModal } from "@/components/sales/ProductDetailsModal";
+import ProductDetailsModal from "@/components/reports/ProductDetailsModal";
 import { FilteredProductsModal } from "@/components/FilteredProductsModal";
 import { EnhancedExportModal } from "@/components/products/EnhancedExportModal";
 import { Eye } from "lucide-react";

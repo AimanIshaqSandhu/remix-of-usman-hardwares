@@ -15,10 +15,10 @@ import { useToast } from "@/hooks/use-toast";
 import { customersApi } from "@/services/api";
 import { CustomerEditModal } from "@/components/customers/CustomerEditModal";
 import { apiConfig } from "@/utils/apiConfig";
-
 import { CustomersList } from "@/components/customers/CustomersList";
 import { CustomersPagination } from "@/components/customers/CustomersPagination";
 import { generateAllCustomersPDF } from "@/utils/allCustomersPdfGenerator";
+import CustomerDetailsModal from "@/components/reports/CustomerDetailsModal";
 
 const Customers = () => {
   const { toast } = useToast();
@@ -44,6 +44,10 @@ const Customers = () => {
   // States for customer edit modal
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [customerToEdit, setCustomerToEdit] = useState<any>(null);
+  
+  // States for customer details modal (the detailed sidebar from reports)
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [customerForDetails, setCustomerForDetails] = useState<any>(null);
 
   const customerTypes = [
     { value: "all", label: "All Customers" },
@@ -526,6 +530,10 @@ const Customers = () => {
             loading={customersLoading}
             onSelectCustomer={setSelectedCustomer}
             onEditCustomer={handleEditCustomer}
+            onViewDetails={(customer) => {
+              setCustomerForDetails(customer);
+              setDetailsModalOpen(true);
+            }}
           />
 
           {/* Pagination */}
@@ -687,6 +695,13 @@ const Customers = () => {
           onCustomerDeleted={handleCustomerDeleted}
         />
       )}
+
+      {/* Customer Details Modal (Detailed Sidebar) */}
+      <CustomerDetailsModal
+        customer={customerForDetails}
+        open={detailsModalOpen}
+        onOpenChange={setDetailsModalOpen}
+      />
     </div>
   );
 };
