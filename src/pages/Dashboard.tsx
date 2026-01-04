@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query"
 import { dashboardApi } from "@/services/api"
 import { reportsApi } from "@/services/reportsApi"
 import { Legend, ReferenceLine } from "recharts";
+import { ProfitContent } from "@/components/profit/ProfitContent";
 function formatNumber(value) {
   const num = Number(value);
   if (isNaN(num)) return '0';
@@ -179,11 +180,10 @@ export default function Dashboard() {
     >
       <div className="flex-1 space-y-4 p-4 md:p-6">
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2 mb-6 h-full lg:grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3 mb-6 h-full lg:w-auto lg:grid-cols-3">
           <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
-          <TabsTrigger value="analytics" className="text-xs sm:text-sm">Analytics</TabsTrigger>
+          <TabsTrigger value="profits" className="text-xs sm:text-sm">Profits</TabsTrigger>
           <TabsTrigger value="reports" className="text-xs sm:text-sm">Reports</TabsTrigger>
-          <TabsTrigger value="notifications" className="text-xs sm:text-sm">Notifications</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -630,7 +630,12 @@ export default function Dashboard() {
           </div>
         </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-6">
+        <TabsContent value="profits" className="space-y-6">
+          <ProfitContent />
+        </TabsContent>
+
+        {/* Hidden Analytics - Removed from tabs but keeping for reference */}
+        <TabsContent value="analytics-hidden" className="space-y-6">
           {/* Enhanced Analytics Section */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card className="border-l-4 border-l-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20 shadow-lg">
@@ -1055,29 +1060,6 @@ export default function Dashboard() {
           </div>
         </TabsContent>
 
-        <TabsContent value="notifications" className="space-y-4">
-        <Card className="col-span-1 shadow-xl border-0 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
-            <CardHeader>
-              <CardTitle>Notifications</CardTitle>
-              <CardDescription>System alerts and notifications</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {stats?.alerts?.map((alert, index) => (
-                  <div key={index} className="flex items-center space-x-3 p-3 bg-orange-50 rounded-lg">
-                    <AlertTriangle className="h-4 w-4 text-orange-500" />
-                    <div>
-                      <p className="text-sm font-medium">{alert.title}</p>
-                      <p className="text-xs text-muted-foreground">{alert.message}</p>
-                    </div>
-                  </div>
-                )) || (
-                    <p className="text-sm text-muted-foreground">No notifications at this time</p>
-                  )}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
       </div>
     </PincodeProtection>
